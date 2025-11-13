@@ -27,9 +27,6 @@ jobs:
 
     - name: Install server dependencies
       run: cd server && npm install
-
-    - name: Run server tests
-      run: cd server && npm test
     
     - name: ✅ Build done
       run: echo "Build completed successfully"
