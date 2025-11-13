@@ -48,7 +48,7 @@ jobs:
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
         working-directory: frontend
-        prod: true
+        prod: '--prod'
 
     - name: Deployment success message
       run: echo "✅ Deployment done successfully!"
