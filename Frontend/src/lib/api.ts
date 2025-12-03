@@ -1,4 +1,8 @@
-const API_BASE_URL = (import.meta.env as { __VITE_API_URL__?: string }).__VITE_API_URL__ || 'http://localhost:5000/api';
+// Automatically switch API URL for production / development
+const API_BASE_URL =
+  import.meta.env.PROD
+    ? "https://kisan-seva-1.onrender.com/api"   // Render backend
+    : "http://localhost:5000/api";               // Local backend for testing
 
 interface User {
   id: string;
@@ -46,16 +50,21 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
+
+    // Global fetch configuration (Fixes "Failed to fetch")
     const config: RequestInit = {
+      method: options.method || "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options.headers,
       },
+      credentials: "include",          // ⭐ Important for CORS / cookies
+      mode: "cors",                    // ⭐ Ensures browser allows CORS
       ...options,
     };
 
-    // Add auth token if available
-    const token = localStorage.getItem('auth_token');
+    // Add auth token
+    const token = localStorage.getItem("auth_token");
     if (token) {
       config.headers = {
         ...config.headers,
@@ -65,88 +74,94 @@ class ApiClient {
 
     const response = await fetch(url, config);
 
+    // Handle non-200 responses
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Network error' }));
+      const error = await response.json().catch(() => ({
+        error: "Network error",
+      }));
       throw new Error(error.error || `HTTP ${response.status}`);
     }
 
     return response.json();
   }
 
-  // Auth endpoints
+  // ---------- AUTH ----------
   async register(data: { name: string; email: string; password: string }) {
-    const response = await this.request<{ token: string; user: User }>('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    const response = await this.request<{ token: string; user: User }>(
+      "/auth/register",
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      }
+    );
 
-    // Store token
-    localStorage.setItem('auth_token', response.token);
-
+    localStorage.setItem("auth_token", response.token);
     return response;
   }
 
   async login(data: { email: string; password: string }) {
-    const response = await this.request<{ token: string; user: User }>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    const response = await this.request<{ token: string; user: User }>(
+      "/auth/login",
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      }
+    );
 
-    // Store token
-    localStorage.setItem('auth_token', response.token);
-
+    localStorage.setItem("auth_token", response.token);
     return response;
   }
 
   async logout() {
-    const response = await this.request<{ message: string }>('/auth/logout', {
-      method: 'POST',
+    const response = await this.request<{ message: string }>("/auth/logout", {
+      method: "POST",
     });
 
-    // Remove token
-    localStorage.removeItem('auth_token');
-
+    localStorage.removeItem("auth_token");
     return response;
   }
 
   async getProfile() {
-    return this.request<{ user: User }>('/auth/profile');
+    return this.request<{ user: User }>("/auth/profile");
   }
 
-  // Todo endpoints
+  // ---------- TODOS ----------
   async getTodos() {
-    return this.request<{ todos: Todo[] }>('/todos');
+    return this.request<{ todos: Todo[] }>("/todos");
   }
 
   async addTodo(data: { title: string; description?: string }) {
-    return this.request<{ todo: Todo }>('/todos', {
-      method: 'POST',
+    return this.request<{ todo: Todo }>("/todos", {
+      method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  async updateTodo(id: string, data: { title?: string; description?: string; completed?: boolean }) {
+  async updateTodo(
+    id: string,
+    data: { title?: string; description?: string; completed?: boolean }
+  ) {
     return this.request<{ todo: Todo }>(`/todos/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(data),
     });
   }
 
   async toggleTodo(id: string) {
     return this.request<{ todo: Todo }>(`/todos/${id}/toggle`, {
-      method: 'PATCH',
+      method: "PATCH",
     });
   }
 
   async deleteTodo(id: string) {
     return this.request<{ message: string }>(`/todos/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
-  // Hygiene test endpoints
+  // ---------- HYGIENE TEST ----------
   async getHygieneTests() {
-    return this.request<{ hygieneTests: HygieneTest[] }>('/hygiene-tests');
+    return this.request<{ hygieneTests: HygieneTest[] }>("/hygiene-tests");
   }
 
   async submitHygieneTest(data: {
@@ -154,8 +169,8 @@ class ApiClient {
     answers: number[];
     score: number;
   }) {
-    return this.request<{ test: HygieneTest }>('/hygiene-tests', {
-      method: 'POST',
+    return this.request<{ test: HygieneTest }>("/hygiene-tests", {
+      method: "POST",
       body: JSON.stringify(data),
     });
   }
@@ -166,18 +181,18 @@ class ApiClient {
 
   async deleteHygieneTest(id: string) {
     return this.request<{ message: string }>(`/hygiene-tests/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
-  // Audit log endpoints
+  // ---------- AUDIT ----------
   async getAuditLogs() {
-    return this.request<{ logs: AuditLog[] }>('/audit-logs');
+    return this.request<{ logs: AuditLog[] }>("/audit-logs");
   }
 
   async logAuditEvent(event: string, metadata?: Record<string, unknown>) {
-    return this.request<{ log: AuditLog }>('/audit-logs', {
-      method: 'POST',
+    return this.request<{ log: AuditLog }>("/audit-logs", {
+      method: "POST",
       body: JSON.stringify({ event, metadata }),
     });
   }
