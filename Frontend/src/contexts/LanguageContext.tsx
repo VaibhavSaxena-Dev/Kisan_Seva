@@ -72,7 +72,7 @@ const translations = {
     noTodos: "No tasks yet. Add one to get started!",
     
     // Home Page
-    title: "Kisan  Seva",
+    title: "Kisan  Seva test",
     subtitle: "Empowering Farmers with Knowledge and Care",
     features: "Our Services",
     feature1Title: "Disease Awareness",
