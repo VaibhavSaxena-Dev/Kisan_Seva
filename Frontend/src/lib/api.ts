@@ -1,8 +1,8 @@
-// Automatically switch API URL for production / development
 const API_BASE_URL =
-  import.meta.env.PROD
-    ? "https://kisan-seva-1.onrender.com/api"   // Render backend
-    : "http://localhost:5000/api";               // Local backend for testing
+  import.meta.env.VITE_API_URL ||                 // Frontend env variable
+  (import.meta.env.PROD
+    ? "https://kisan-seva-1.onrender.com/api"     // Fallback for production
+    : "http://localhost:5000/api"); 
 
 interface User {
   id: string;
