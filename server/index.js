@@ -10,7 +10,6 @@ import auditLogRoutes from './routes/auditLogs.js';
 dotenv.config();
 
 const app = express();
-const PORT =  process.env.SERVER_PORT;
 
 // Middleware
 app.use(cors({
@@ -52,15 +51,14 @@ app.use((err, req, res, next) => {
 });
 
 
+const PORT = process.env.PORT || 5000;
+
 const startServer = async () => {
   try {
-
     await connectDB();
-    
-    
+
     app.listen(PORT, () => {
-      console.log(`🚀 Server running`);
-      console.log(`📡 API endpoint request received`);
+      console.log(`🚀 Server running on port ${PORT}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
@@ -70,6 +68,7 @@ const startServer = async () => {
 };
 
 startServer();
+
 
 export default app;
 
