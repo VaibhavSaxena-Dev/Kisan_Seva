@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   define: {
-    __VITE_API_URL__: JSON.stringify("http://localhost:5000"),
+    __VITE_API_URL__: JSON.stringify(process.env.VITE_API_URL || "http://localhost:5000"),
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
