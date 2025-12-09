@@ -19,7 +19,7 @@ Provides a To-Do list creation and management feature, helping farmers track dai
 
 React + TypeScript + Vite frontend application for Kisan Seva.
 
-_____________________________________________________________________________________________
+
 
 ## 📁 Structure
 
@@ -31,7 +31,8 @@ ________________________________________________________________________________
   - `utils/` - Utility functions
   - `Backend/` - Frontend backend logic (localStorage, etc.)
 
-_____________________________________________________________________________________________
+
+
 # Kisan Seva - Backend Server
 
 Node.js + Express + MongoDB backend server for Kisan Seva.
@@ -58,9 +59,9 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 ```
-_____________________________________________________________________________________________
+
+
 
 Demo user  -         testing1@gmail.com
 password for login - testing1 
 
-_____________________________________________________________________________________________
