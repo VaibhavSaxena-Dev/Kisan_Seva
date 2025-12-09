@@ -1,37 +1,38 @@
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+# Kisan Seva - Frontend
 
-Follow these steps:
+React + TypeScript + Vite frontend application for Kisan Seva.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 📁 Structure
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+- `src/` - Source code
+  - `pages/` - Page components
+  - `components/` - Reusable components
+  - `contexts/` - React contexts (Auth, Language)
+  - `hooks/` - Custom hooks
+  - `utils/` - Utility functions
+  - `Backend/` - Frontend backend logic (localStorage, etc.)
 
-**Edit a file directly in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+# Kisan Seva - Backend Server
 
-**Use GitHub Codespaces**
+Node.js + Express + MongoDB backend server for Kisan Seva.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-## What technologies are used for this project?
+## 📁 Structure
+
+- `config/` - Configuration files
+  - `database.js` - MongoDB connection
+- `models/` - MongoDB schemas
+  - `User.js` - User model
+  - `Todo.js` - Todo model
+  - `AuditLog.js` - Audit log model
+  - `HygieneTest.js` - Hygiene test model
+- `index.js` - Express server entry point
+
+
 
 This project is built with:
 
@@ -40,5 +41,8 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+```
 
 
+Demo user  -         testing1@gmail.com
+password for login - testing1 
