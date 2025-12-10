@@ -1,39 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  createdAt: string;
-  lastLogin?: string;
-  profile?: Record<string, unknown>;
-}
-
-interface Todo {
-  id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-  createdAt: string;
-}
-
-interface HygieneTest {
-  id: string;
-  farmType: string;
-  answers: number[];
-  score: number;
-  percentage: number;
-  completedAt: string;
-}
-
-interface AuditLog {
-  id: string;
-  event: string;
-  email: string;
-  timestamp: string;
-  metadata?: Record<string, unknown>;
-}
-
 class ApiClient {
   private baseURL: string;
 
@@ -41,25 +7,21 @@ class ApiClient {
     this.baseURL = baseURL;
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
 
-    // Global fetch configuration (Fixes "Failed to fetch")
     const config: RequestInit = {
       method: options.method || "GET",
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
       },
-      credentials: "include",          //  Important for CORS / cookies
-      mode: "cors",                    //  Ensures browser allows CORS
+      credentials: "include",
+      mode: "cors",
       ...options,
     };
 
-    // Add auth token
+    // Add token
     const token = localStorage.getItem("auth_token");
     if (token) {
       config.headers = {
@@ -70,11 +32,8 @@ class ApiClient {
 
     const response = await fetch(url, config);
 
-    // Handle non-200 responses
     if (!response.ok) {
-      const error = await response.json().catch(() => ({
-        error: "Network error",
-      }));
+      const error = await response.json().catch(() => ({ error: "Network error" }));
       throw new Error(error.error || `HTTP ${response.status}`);
     }
 
@@ -84,7 +43,7 @@ class ApiClient {
   // ---------- AUTH ----------
   async register(data: { name: string; email: string; password: string }) {
     const response = await this.request<{ token: string; user: User }>(
-      "/auth/register",
+      "/api/auth/register",
       {
         method: "POST",
         body: JSON.stringify(data),
@@ -97,7 +56,7 @@ class ApiClient {
 
   async login(data: { email: string; password: string }) {
     const response = await this.request<{ token: string; user: User }>(
-      "/auth/login",
+      "/api/auth/login",
       {
         method: "POST",
         body: JSON.stringify(data),
@@ -109,85 +68,79 @@ class ApiClient {
   }
 
   async logout() {
-    const response = await this.request<{ message: string }>("/auth/logout", {
-      method: "POST",
-    });
+    const response = await this.request<{ message: string }>(
+      "/api/auth/logout",
+      { method: "POST" }
+    );
 
     localStorage.removeItem("auth_token");
     return response;
   }
 
   async getProfile() {
-    return this.request<{ user: User }>("/auth/profile");
+    return this.request<{ user: User }>("/api/auth/profile");
   }
 
   // ---------- TODOS ----------
   async getTodos() {
-    return this.request<{ todos: Todo[] }>("/todos");
+    return this.request<{ todos: Todo[] }>("/api/todos");
   }
 
   async addTodo(data: { title: string; description?: string }) {
-    return this.request<{ todo: Todo }>("/todos", {
+    return this.request<{ todo: Todo }>("/api/todos", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  async updateTodo(
-    id: string,
-    data: { title?: string; description?: string; completed?: boolean }
-  ) {
-    return this.request<{ todo: Todo }>(`/todos/${id}`, {
+  async updateTodo(id: string, data: any) {
+    return this.request<{ todo: Todo }>(`/api/todos/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
   }
 
   async toggleTodo(id: string) {
-    return this.request<{ todo: Todo }>(`/todos/${id}/toggle`, {
+    return this.request<{ todo: Todo }>(`/api/todos/${id}/toggle`, {
       method: "PATCH",
     });
   }
 
   async deleteTodo(id: string) {
-    return this.request<{ message: string }>(`/todos/${id}`, {
+    return this.request<{ message: string }>(`/api/todos/${id}`, {
       method: "DELETE",
     });
   }
 
   // ---------- HYGIENE TEST ----------
   async getHygieneTests() {
-    return this.request<{ hygieneTests: HygieneTest[] }>("/hygiene-tests");
+    return this.request<{ hygieneTests: HygieneTest[] }>("/api/hygiene-tests");
   }
 
-  async submitHygieneTest(data: {
-    farmType: string;
-    answers: number[];
-    score: number;
-  }) {
-    return this.request<{ test: HygieneTest }>("/hygiene-tests", {
+  async submitHygieneTest(data: any) {
+    return this.request<{ test: HygieneTest }>("/api/hygiene-tests", {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
   async getHygieneTest(id: string) {
-    return this.request<{ test: HygieneTest }>(`/hygiene-tests/${id}`);
+    return this.request<{ test: HygieneTest }>(`/api/hygiene-tests/${id}`);
   }
 
   async deleteHygieneTest(id: string) {
-    return this.request<{ message: string }>(`/hygiene-tests/${id}`, {
+    return this.request<{ message: string }>(`/api/hygiene-tests/${id}`, {
       method: "DELETE",
     });
   }
 
   // ---------- AUDIT ----------
   async getAuditLogs() {
-    return this.request<{ logs: AuditLog[] }>("/audit-logs");
+    return this.request<{ logs: AuditLog[] }>("/api/audit-logs");
   }
 
-  async logAuditEvent(event: string, metadata?: Record<string, unknown>) {
-    return this.request<{ log: AuditLog }>("/audit-logs", {
+  async logAuditEvent(event: string, metadata?: any) {
+    return this.request<{ log: AuditLog }>("/api/audit-logs", {
       method: "POST",
       body: JSON.stringify({ event, metadata }),
     });
