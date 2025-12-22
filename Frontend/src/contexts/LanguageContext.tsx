@@ -37,6 +37,8 @@ const translations = {
     namePlaceholder: "Enter your full name",
     emailLabel: "Email",
     passwordLabel: "Password",
+    emailPlaceholder: "Enter your email",
+    passwordPlaceholder: "*****",
     confirmPasswordLabel: "Confirm Password",
     registerAction: "Create account",
     registerSubmitting: "Creating your account...",
@@ -262,6 +264,23 @@ const translations = {
     feature3Title: "विशेषज्ञ मार्गदर्शन",
     feature3Desc: "स्वस्थ मुर्गीपालन और पशुपालन बनाए रखने पर विशेषज्ञ सलाह प्राप्त करें",
     getStarted: "शुरू करें",
+
+    // Login Page
+    loginTitle: "किसान सेवा में साइन इन करें",
+    loginSubtitle: "आपके लिए किसान संसाधनों तक पहुंच प्राप्त करें।",
+    loginAction: "लॉग इन करें",
+    loginSubmitting: "साइन इन हो रहा है...",
+    loginSuccessTitle: "लॉग इन सफल",
+    loginSuccessMessage: "आप किसान सेवा में लॉग इन हैं।",
+    loginErrorTitle: "साइन इन करने में असमर्थ",
+    loginErrorMessage: "कृपया अपना ईमेल और पासवर्ड जांचें और पुनः प्रयास करें।",
+    noAccountPrompt: "अभी तक खाता नहीं है?",
+    createAccountLink: "एक बनाएं",
+    emailLabel: "ईमेल",
+    passwordLabel: "पासवर्ड",
+    emailPlaceholder: "आपका ईमेल दर्ज करें",
+    passwordPlaceholder: "*****",
+    privacyNotice: "आपका खाता डेटा इस डिवाइस पर ही सुरक्षित रूप से संग्रहीत है।",
     
     // Awareness Page
     awarenessTitle: "रोग जागरूकता",
@@ -460,6 +479,8 @@ const translations = {
     namePlaceholder: "ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ",
     emailLabel: "ಇಮೇಲ್",
     passwordLabel: "ಪಾಸ್‌ವರ್ಡ್",
+    emailPlaceholder: "ನಿಮ್ಮ ಇಮೇಲ್ ನಮೂದಿಸಿ",
+    passwordPlaceholder: "*****",
     confirmPasswordLabel: "ಪಾಸ್‌ವರ್ಡ್ ದೃಢೀಕರಿಸಿ",
     registerAction: "ಖಾತೆ ರಚಿಸಿ",
     registerSubmitting: "ನಿಮ್ಮ ಖಾತೆಯನ್ನು ರಚಿಸುತ್ತಿದೆ...",
@@ -673,7 +694,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [language, setLanguage] = useState<Language>('en');
 
   const t = (key: string): string => {
-    return translations[language][key as keyof typeof translations['en']] || key;
+    return translations[language]?.[key] || translations['en']?.[key] || key;
   };
 
   return (
