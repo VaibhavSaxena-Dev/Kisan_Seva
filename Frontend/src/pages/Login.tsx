@@ -89,7 +89,7 @@ const Login = () => {
                   id="email"
                   type="email"
                   autoComplete="email"
-                  placeholder="you@example.com"
+                  placeholder={t("emailPlaceholder")}
                   {...registerField("email")}
                 />
                 {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
@@ -100,7 +100,7 @@ const Login = () => {
                   id="password"
                   type="password"
                   autoComplete="current-password"
-                  placeholder="********"
+                  placeholder={t("passwordPlaceholder")}
                   {...registerField("password")}
                 />
                 {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
