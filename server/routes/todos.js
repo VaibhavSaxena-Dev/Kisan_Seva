@@ -41,7 +41,15 @@ const authenticate = async (req, res, next) => {
 ========================= */
 router.get('/', authenticate, async (req, res) => {
   try {
-    res.json({ todos: req.user.todos });
+    const todos = req.user.todos.map(todo => ({
+      id: todo._id.toString(),
+      title: todo.title,
+      description: todo.description,
+      completed: todo.completed,
+      createdAt: todo.createdAt,
+      updatedAt: todo.updatedAt,
+    }));
+    res.json({ todos });
   } catch (error) {
     console.error('Get todos error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -70,7 +78,17 @@ router.post('/', authenticate, async (req, res) => {
     req.user.todos.push(newTodo);
     await req.user.save();
 
-    res.status(201).json({ todo: req.user.todos.at(-1) });
+    const addedTodo = req.user.todos.at(-1);
+    res.status(201).json({
+      todo: {
+        id: addedTodo._id.toString(),
+        title: addedTodo.title,
+        description: addedTodo.description,
+        completed: addedTodo.completed,
+        createdAt: addedTodo.createdAt,
+        updatedAt: addedTodo.updatedAt,
+      }
+    });
   } catch (error) {
     console.error('Add todo error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -99,7 +117,16 @@ router.put('/:id', authenticate, async (req, res) => {
 
     await req.user.save();
 
-    res.json({ todo });
+    res.json({
+      todo: {
+        id: todo._id.toString(),
+        title: todo.title,
+        description: todo.description,
+        completed: todo.completed,
+        createdAt: todo.createdAt,
+        updatedAt: todo.updatedAt,
+      }
+    });
   } catch (error) {
     console.error('Update todo error:', error);
     res.status(500).json({ error: 'Internal server error' });
