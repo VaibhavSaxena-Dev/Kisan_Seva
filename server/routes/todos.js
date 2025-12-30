@@ -1,18 +1,27 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/index.js';
+import User from '../models/User.js';
 
 const router = express.Router();
 
-// Middleware to authenticate user
+/* =========================
+   AUTH MIDDLEWARE
+========================= */
 const authenticate = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'No token provided' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    const token = authHeader.split(' ')[1];
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || 'your-secret-key'
+    );
+
     const user = await User.findById(decoded.userId);
 
     if (!user) {
@@ -22,11 +31,14 @@ const authenticate = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.error('Auth error:', error);
     res.status(401).json({ error: 'Invalid token' });
   }
 };
 
-// Get all todos for user
+/* =========================
+   GET ALL TODOS
+========================= */
 router.get('/', authenticate, async (req, res) => {
   try {
     res.json({ todos: req.user.todos });
@@ -36,7 +48,9 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-// Add new todo
+/* =========================
+   ADD NEW TODO
+========================= */
 router.post('/', authenticate, async (req, res) => {
   try {
     const { title, description } = req.body;
@@ -46,84 +60,91 @@ router.post('/', authenticate, async (req, res) => {
     }
 
     const newTodo = {
-      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       title: title.trim(),
       description: description?.trim() || '',
       completed: false,
       createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     req.user.todos.push(newTodo);
     await req.user.save();
 
-    res.status(201).json({ todo: newTodo });
+    res.status(201).json({ todo: req.user.todos.at(-1) });
   } catch (error) {
     console.error('Add todo error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Update todo
+/* =========================
+   UPDATE TODO
+========================= */
 router.put('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, completed } = req.body;
 
-    const todoIndex = req.user.todos.findIndex(todo => todo.id === id);
-    if (todoIndex === -1) {
+    const todo = req.user.todos.id(id);
+
+    if (!todo) {
       return res.status(404).json({ error: 'Todo not found' });
     }
 
-    if (title !== undefined) {
-      req.user.todos[todoIndex].title = title.trim();
-    }
-    if (description !== undefined) {
-      req.user.todos[todoIndex].description = description.trim();
-    }
-    if (completed !== undefined) {
-      req.user.todos[todoIndex].completed = completed;
-    }
+    if (title !== undefined) todo.title = title.trim();
+    if (description !== undefined) todo.description = description.trim();
+    if (completed !== undefined) todo.completed = completed;
+
+    todo.updatedAt = new Date();
 
     await req.user.save();
 
-    res.json({ todo: req.user.todos[todoIndex] });
+    res.json({ todo });
   } catch (error) {
     console.error('Update todo error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Toggle todo completion
+/* =========================
+   TOGGLE TODO COMPLETION
+========================= */
 router.patch('/:id/toggle', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
-    const todoIndex = req.user.todos.findIndex(todo => todo.id === id);
-    if (todoIndex === -1) {
+    const todo = req.user.todos.id(id);
+
+    if (!todo) {
       return res.status(404).json({ error: 'Todo not found' });
     }
 
-    req.user.todos[todoIndex].completed = !req.user.todos[todoIndex].completed;
+    todo.completed = !todo.completed;
+    todo.updatedAt = new Date();
+
     await req.user.save();
 
-    res.json({ todo: req.user.todos[todoIndex] });
+    res.json({ todo });
   } catch (error) {
     console.error('Toggle todo error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Delete todo
+/* =========================
+   DELETE TODO
+========================= */
 router.delete('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
-    const todoIndex = req.user.todos.findIndex(todo => todo.id === id);
-    if (todoIndex === -1) {
+    const todo = req.user.todos.id(id);
+
+    if (!todo) {
       return res.status(404).json({ error: 'Todo not found' });
     }
 
-    req.user.todos.splice(todoIndex, 1);
+    todo.deleteOne();
     await req.user.save();
 
     res.json({ message: 'Todo deleted successfully' });
