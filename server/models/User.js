@@ -105,23 +105,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
-  profile: {
-    phone: {
-      type: String,
-      trim: true,
-      default: '',
-    },
-    address: {
-      type: String,
-      trim: true,
-      default: '',
-    },
-    farmType: {
-      type: String,
-      enum: ['poultry', 'cattle', 'both', 'none'],
-      default: 'none',
-    },
-  },
+  
   todos: [todoSchema], // Embedded todos
   hygieneTests: [hygieneTestSchema], // Embedded hygiene test results
 });
