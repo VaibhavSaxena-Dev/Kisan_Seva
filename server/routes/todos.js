@@ -4,9 +4,7 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-/* =========================
-   AUTH MIDDLEWARE
-========================= */
+   //AUTH MIDDLEWARE
 const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -36,9 +34,7 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-/* =========================
-   GET ALL TODOS
-========================= */
+   //GET ALL TODOS
 router.get('/', authenticate, async (req, res) => {
   try {
     const todos = req.user.todos.map(todo => ({
@@ -56,9 +52,8 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
-/* =========================
-   ADD NEW TODO
-========================= */
+
+   //ADD NEW TODO
 router.post('/', authenticate, async (req, res) => {
   try {
     const { title, description } = req.body;
@@ -95,9 +90,8 @@ router.post('/', authenticate, async (req, res) => {
   }
 });
 
-/* =========================
-   UPDATE TODO
-========================= */
+
+   //UPDATE TODO
 router.put('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
@@ -133,9 +127,8 @@ router.put('/:id', authenticate, async (req, res) => {
   }
 });
 
-/* =========================
-   TOGGLE TODO COMPLETION
-========================= */
+
+   // TOGGLE TODO COMPLETION
 router.patch('/:id/toggle', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
@@ -158,9 +151,8 @@ router.patch('/:id/toggle', authenticate, async (req, res) => {
   }
 });
 
-/* =========================
-   DELETE TODO
-========================= */
+
+  // DELETE TODO
 router.delete('/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
